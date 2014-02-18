@@ -27,6 +27,7 @@
         [_cart addObject:tempFruit];
         
     }
+    _isClear = NO;
     
     self.title = @"Banana Bar";
     [super viewDidLoad];
@@ -48,13 +49,35 @@
 //Should remove all of the fruit in the cart.
 -(IBAction)removeAllFruitInCart:(id)sender
 {
-    
+    if (!_isClear)
+    {
+        [_cart removeAllObjects];
+        
+        _isClear = YES;
+        [_removeAll setEnabled:NO];
+        [_fillCart setEnabled:YES];
+        [_selectAll setEnabled:NO];
+        [_cartView reloadData];
+    }
 }
 
 //should add 50 bananas to the cart and display them!
 -(IBAction)fillCartWithBananas:(id)sender
 {
-    
+    if (_isClear)
+    {
+        for (int i=0; i<50; i++)
+        {
+            Fruit *tempFruit = [[Fruit alloc] initWithWithName:@"Bananas" andColor:@"Yellow" andShape:@"Curvy"];
+            tempFruit.url = @"http://en.m.wikipedia.org/wiki/banana";
+            [_cart addObject:tempFruit];
+        }
+        _isClear = NO;
+        [_fillCart setEnabled:NO];
+        [_removeAll setEnabled:YES];
+        [_selectAll setEnabled:YES];
+        [_cartView reloadData];
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -108,7 +131,11 @@
 }
 
 -(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+    Fruit * tempFruit = [_cart objectAtIndex:indexPath.row];
+    [tableView deselectRowAtIndexPath:indexPath animated: YES];
+    DetailViewController *detailViewController = [[DetailViewController alloc] initWithNibName:@"DetailViewController" bundle:nil];
+    detailViewController.url = tempFruit.url;
+    [self.navigationController pushViewController:detailViewController animated:YES];
 }
 
 @end
